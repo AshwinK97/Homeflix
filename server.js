@@ -1,11 +1,13 @@
 const express = require("express");
 const fs = require("fs");
+const sqlite3 = require("sqlite3").verbose();
+
 const app = express();
 const port = 3000;
 
 app.get("/", (req, res) => res.send("Hello World!"));
 
-app.get("/video", function(req, res) {
+app.get("/video", (req, res) => {
   const path = "videos/long.mp4";
   const stat = fs.statSync(path);
   const fileSize = stat.size;
@@ -33,5 +35,7 @@ app.get("/video", function(req, res) {
     fs.createReadStream(path).pipe(res);
   }
 });
+
+app.get("/getfiles", (req, res) => {});
 
 app.listen(port, () => console.log(`Homeflix listening on port: ${port}`));
