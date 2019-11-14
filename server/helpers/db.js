@@ -1,37 +1,43 @@
 const sqlite3 = require("sqlite3").verbose();
-const db = new sqlite3.Database(":memory:");
 const config = require("../config");
 
+const openDB = () => {
+  let db = new sqlite3.Database(`./db/${config.dbname}`, err => {
+    if (err) return console.error(err.message);
+    console.log(`Connected to SQlite database: ./db/${config.dbname}.`);
+  });
+  return db;
+};
+
+const closeDB = db => {
+  db.close(err => {
+    if (err) return console.error(err.message);
+    console.log("Closed the database connection.");
+  });
+};
+
 const createTables = () => {
+  let db = openDB();
   db.serialize(() => {
-    db.run("CREATE TABLE users (id Integer PRIMARY KEY)");
+    db.run(config.createUsersQuery);
+    db.run(
+      "INSERT INTO users(username, password) VALUES(?, ?)",
+      ["admin", "1234"],
+      err => {
+        if (err) return console.error(err.message);
+        console.log("Users table created and populated.");
+      }
+    );
+    db.run(config.createVideosQuery);
+    db.run(config.createUserVideoQuery);
   });
+  closeDB(db);
 };
 
-// return promise with connection from db pool
-const getDBConnection = () => {
-  return new Promise((resolve, reject) => {
-    pool.getConnection((err, connection) => {
-      if (err) reject(err);
-      else if (connection) resolve(connection);
-      else reject("error getting connection to db");
-    });
-  });
+const selectRow = () => {
+  let db = openDB();
+  db.serialize(() => {});
+  closeDB(db);
 };
 
-// execute query and return promise with rows
-const executeQuery = (query, args) => {
-  return new Promise((resolve, reject) => {
-    getDBConnection()
-      .then(connection => {
-        connection.query(query, args, (err, rows) => {
-          connection.release();
-          if (err) reject(err);
-          else resolve(rows);
-        });
-      })
-      .catch(err => console.log(err));
-  });
-};
-
-module.exports = { pool, executeQuery, getDBConnection };
+module.exports = { createTables, selectRow };

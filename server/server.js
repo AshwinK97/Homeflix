@@ -1,11 +1,11 @@
 const express = require("express");
 const fs = require("fs");
-const sqlite3 = require("sqlite3").verbose();
-
+const auth = require("./helpers/auth");
+const db = require("./helpers/db");
+const config = require("./config");
 const app = express();
-const port = 3000;
 
-app.get("/", (req, res) => res.send("Hello World!"));
+app.get("/", (req, res) => res.send("Home"));
 
 app.get("/video", (req, res) => {
   const path = "videos/long.mp4";
@@ -36,6 +36,11 @@ app.get("/video", (req, res) => {
   }
 });
 
-app.get("/getfiles", (req, res) => {});
+app.get("/initializedb", auth.isAuth, (req, res) => {
+  db.createTables();
+  res.send("Database created.");
+});
 
-app.listen(port, () => console.log(`Homeflix listening on port: ${port}`));
+app.listen(config.port, () =>
+  console.log(`Homeflix listening on port: ${config.port}`)
+);
