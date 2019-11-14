@@ -16,6 +16,17 @@ const closeDB = db => {
   });
 };
 
+const select = (query, args) => {
+  let db = openDB();
+  db.serialize(() => {
+    db.get(query, args, (err, row) => {
+      if (err) return console.error(err.message);
+      return row;
+    });
+  });
+  closeDB(db);
+};
+
 const createTables = () => {
   let db = openDB();
   db.serialize(() => {
@@ -28,16 +39,24 @@ const createTables = () => {
         console.log("Users table created and populated.");
       }
     );
+
     db.run(config.createVideosQuery);
+    db.run(
+      "INSERT INTO videos(name, path) VALUES(?, ?)",
+      ["Apex cucks Fornite", "./videos/apex.mp4"],
+      err => {
+        if (err) return console.error(err.message);
+        console.log("Videos table created and populated.");
+      }
+    );
+
     db.run(config.createUserVideoQuery);
   });
   closeDB(db);
 };
 
-const selectRow = () => {
-  let db = openDB();
-  db.serialize(() => {});
-  closeDB(db);
+const getVideoPath = id => {
+  let query = "SELECT path from ";
 };
 
-module.exports = { createTables, selectRow };
+module.exports = { createTables, getVideoPath };

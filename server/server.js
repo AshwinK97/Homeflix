@@ -36,6 +36,11 @@ app.get("/video", (req, res) => {
   }
 });
 
+app.get("/video", auth.isAuth, (req, res) => {
+  data = db.getVideoPath(req.body.videoid);
+  res.send(data);
+});
+
 app.get("/initializedb", auth.isAuth, (req, res) => {
   db.createTables();
   res.send("Database created.");
