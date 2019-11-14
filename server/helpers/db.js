@@ -16,15 +16,15 @@ const closeDB = db => {
   });
 };
 
-const select = (query, args) => {
+const selectRow = (query, args) => {
   let db = openDB();
-  db.serialize(() => {
+  return new Promise((resolve, reject) => {
     db.get(query, args, (err, row) => {
-      if (err) return console.error(err.message);
-      return row;
+      closeDB(db);
+      if (err) reject(err);
+      resolve(row);
     });
   });
-  closeDB(db);
 };
 
 const createTables = () => {
@@ -56,7 +56,7 @@ const createTables = () => {
 };
 
 const getVideoPath = id => {
-  let query = "SELECT path from ";
+  return selectRow("SELECT path FROM videos where id = ?", [id]);
 };
 
 module.exports = { createTables, getVideoPath };
