@@ -27,6 +27,17 @@ const selectRow = (query, args) => {
   });
 };
 
+const selectAll = (query, args) => {
+  let db = openDB();
+  return new Promise((resolve, reject) => {
+    db.all(query, args, (err, rows) => {
+      closeDB(db);
+      if (err) reject(err);
+      resolve(rows);
+    });
+  });
+};
+
 const createTables = () => {
   let db = openDB();
   db.serialize(() => {
@@ -56,7 +67,13 @@ const createTables = () => {
 };
 
 const getVideoPath = id => {
+  console.log(`Retrieving video id: ${id} from database.`);
   return selectRow("SELECT path FROM videos where id = ?", [id]);
 };
 
-module.exports = { createTables, getVideoPath };
+const getAllVideos = () => {
+  console.log("Retrieving all videos from database.");
+  return selectAll("SELECT * FROM videos", []);
+};
+
+module.exports = { createTables, getVideoPath, getAllVideos };

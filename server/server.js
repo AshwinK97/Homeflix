@@ -8,7 +8,7 @@ const app = express();
 app.get("/", (req, res) => res.send("Home"));
 
 app.get("/video", auth.isAuth, (req, res) => {
-  db.getVideoPath(1) // should be req.body.videoid
+  db.getVideoPath(2) // should be req.body.videoid
     .then(data => {
       const path = data.path;
       const stat = fs.statSync(path);
@@ -36,6 +36,14 @@ app.get("/video", auth.isAuth, (req, res) => {
         res.writeHead(200, head);
         fs.createReadStream(path).pipe(res);
       }
+    })
+    .catch(err => console.error(err));
+});
+
+app.get("/videos", auth.isAuth, (req, res) => {
+  db.getAllVideos()
+    .then(data => {
+      res.send(data);
     })
     .catch(err => console.error(err));
 });
