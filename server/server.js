@@ -17,8 +17,14 @@ app.use(
 );
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-
-app.get("/login", (req, res) => {});
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*"); // update to match the domain you will make the request from
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
+  next();
+});
 
 app.get("/video", auth.isAuth, (req, res) => {
   db.getVideoPath(2) // should be req.body.videoid
