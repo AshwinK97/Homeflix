@@ -1,11 +1,24 @@
 const express = require("express");
 const fs = require("fs");
+const session = require("express-session");
+const bodyParser = require("body-parser");
+
 const auth = require("./helpers/auth");
 const db = require("./helpers/db");
 const config = require("./config");
-const app = express();
 
-app.get("/", (req, res) => res.send("Home"));
+const app = express();
+app.use(
+  session({
+    secret: config.secret,
+    resave: true,
+    saveUninitialized: true
+  })
+);
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+
+app.get("/login", (req, res) => {});
 
 app.get("/video", auth.isAuth, (req, res) => {
   db.getVideoPath(2) // should be req.body.videoid
