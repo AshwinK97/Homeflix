@@ -1,13 +1,27 @@
 <template>
-  <router-view />
+  <v-app>
+    <v-app-bar
+      app
+      color="primary"
+      dark
+    >
+      <div class="d-flex align-center">Homeflix</div>
+    </v-app-bar>
+
+    <v-content>
+      <router-view ></router-view>
+    </v-content>
+  </v-app>
 </template>
+
+<script>
+export default {
+  name: 'App'
+};
+</script>
+
 <style>
-  @import url('https://fonts.googleapis.com/css?family=Roboto');
-  html { font-size: 22px; }
-  body { font-family: 'Roboto', sans-serif; padding: 0 5rem;}
-  a {
-    color: #0094FF;
+  .link {
     text-decoration: none;
   }
-  a:hover { color: #0074C6; }
 </style>

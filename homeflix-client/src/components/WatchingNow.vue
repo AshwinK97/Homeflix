@@ -2,7 +2,7 @@
   <v-container>
     <v-layout wrap>
       <v-flex xs12 class="ma-5">
-        <h1 class="display-3">Library</h1>
+        <h1 class="display-3">Being Watched Now</h1>
       </v-flex>
       <v-flex class="mx-5" xs3 v-for="video in videos" :key="video.id">
         <router-link class="link" :to="'/video/' + video.id">
@@ -20,7 +20,7 @@
 
 <script>
 export default {
-  name: "Library",
+  name: "WatchingNow",
   data: () => {
     return {
       videos: [
