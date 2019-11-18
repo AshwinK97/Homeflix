@@ -1,17 +1,30 @@
 const express = require("express");
 const fs = require("fs");
+const session = require("express-session");
+const bodyParser = require("body-parser");
+
 const auth = require("./helpers/auth");
 const db = require("./helpers/db");
 const config = require("./config");
-const app = express();
 
-app.use(function(req, res, next) {
+const app = express();
+app.use(
+  session({
+    secret: config.secret,
+    resave: true,
+    saveUninitialized: true
+  })
+);
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*"); // update to match the domain you will make the request from
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
   next();
 });
-
-app.get("/", (req, res) => res.send("Home"));
 
 app.get("/video", auth.isAuth, (req, res) => {
   db.getVideoPath(2) // should be req.body.videoid
