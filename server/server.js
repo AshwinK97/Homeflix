@@ -1,7 +1,8 @@
+const bcrypt = require("bcrypt");
+const bodyParser = require("body-parser");
 const express = require("express");
 const fs = require("fs");
 const session = require("express-session");
-const bodyParser = require("body-parser");
 
 const auth = require("./helpers/auth");
 const db = require("./helpers/db");
@@ -18,12 +19,37 @@ app.use(
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*"); // update to match the domain you will make the request from
+  res.header("Access-Control-Allow-Origin", config.domain);
   res.header(
     "Access-Control-Allow-Headers",
     "Origin, X-Requested-With, Content-Type, Accept"
   );
   next();
+});
+
+app.get("/login", (req, res) => {
+  if (!req.body.username || !req.body.password)
+    return res.send("Invalid username or password.");
+  db.getUser(req.body.username)
+    .then(data => {
+      bcrypt.compare(req.body.password, data.password).then(isSuccess => {
+        if (!isSuccess) return res.send("Invalid username or password.");
+        return res.send("Successfully logged in.");
+      });
+    })
+    .catch(err => {
+      return res.send("Invalid username or password.");
+    });
+});
+
+app.get("/signup", (req, res) => {
+  if (!req.body.username || !req.body.password)
+    return res.send("Invalid username or password.");
+  db.addUser(req.body.username, req.body.password)
+    .then(isSuccess => {})
+    .catch(err => {
+      return console.log(err);
+    });
 });
 
 app.get("/video", auth.isAuth, (req, res) => {
@@ -61,9 +87,7 @@ app.get("/video", auth.isAuth, (req, res) => {
 
 app.get("/videos", auth.isAuth, (req, res) => {
   db.getAllVideos()
-    .then(data => {
-      res.send(data);
-    })
+    .then(data => res.send(data))
     .catch(err => console.error(err));
 });
 
@@ -72,6 +96,8 @@ app.get("/initializedb", auth.isAuth, (req, res) => {
   res.send("Database created.");
 });
 
-app.listen(config.port, () =>
-  console.log(`Homeflix listening on port: ${config.port}`)
-);
+app.get("*", (req, res) => {
+  res.status(404).send("Error 404: url not found");
+});
+
+app.listen(config.port, () => console.log(`Listening on port: ${config.port}`));

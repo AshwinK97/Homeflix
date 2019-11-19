@@ -38,6 +38,17 @@ const selectAll = (query, args) => {
   });
 };
 
+const insert = (query, args) => {
+  let db = openDB();
+  return new Promise((resolve, reject) => {
+    db.run(query, args, err => {
+      closeDB(db);
+      if (err) reject(err);
+      resolve("success");
+    });
+  });
+};
+
 const createTables = () => {
   let db = openDB();
   db.serialize(() => {
@@ -66,9 +77,22 @@ const createTables = () => {
   closeDB(db);
 };
 
+const getUser = username => {
+  console.log(`Looking up user: ${username} in database.`);
+  return selectRow("SELECT * FROM users WHERE username = ?", [username]);
+};
+
+const addUser = (username, password) => {
+  console.log(`Adding user: ${username} to database.`);
+  return insert("INSERT INTO users (username, password) VALUES (?, ?)", [
+    username,
+    password
+  ]);
+};
+
 const getVideoPath = id => {
   console.log(`Retrieving video id: ${id} from database.`);
-  return selectRow("SELECT path FROM videos where id = ?", [id]);
+  return selectRow("SELECT path FROM videos WHERE id = ?", [id]);
 };
 
 const getAllVideos = () => {
@@ -76,4 +100,4 @@ const getAllVideos = () => {
   return selectAll("SELECT * FROM videos", []);
 };
 
-module.exports = { createTables, getVideoPath, getAllVideos };
+module.exports = { createTables, getUser, addUser, getVideoPath, getAllVideos };
