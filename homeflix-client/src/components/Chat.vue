@@ -9,18 +9,22 @@
       </v-row>
       <v-row>
         <v-col class="messages">
-          <div v-for="message in messages" :key="message.id" class="message" :class="{own: message.owner}">
-            {{message.user}}: {{message.message}}
-          </div>
+          <div
+            v-for="message in messages"
+            :key="message.id"
+            class="message"
+            :class="{own: message.owner}"
+          >{{message.user}}: {{message.message}}</div>
         </v-col>
       </v-row>
       <v-row align="center" class="chat-footer">
         <v-col sm="10">
-          <v-text-field v-model="user" label="User Handle" required></v-text-field>
-          <v-text-field v-model="message" label="Message" required></v-text-field>
+          <v-text-field v-if="isUserEmpty" v-model="user" label="User Handle" required></v-text-field>
+          <v-text-field v-else v-model="message" label="Message" required></v-text-field>
         </v-col>
         <v-col sm="2">
-          <v-btn v-on:click="sendMessage">Send</v-btn>
+          <v-btn v-if="isUserEmpty" v-on:click="saveHandle">Submit</v-btn>
+          <v-btn v-else v-on:click="sendMessage">Send</v-btn>
         </v-col>
       </v-row>
     </v-container>
@@ -29,16 +33,27 @@
 
 <script>
 import io from "socket.io-client";
-import { uuid } from 'vue-uuid';
+import { uuid } from "vue-uuid";
 
 export default {
   data() {
     return {
-      user: "asdf",
+      user: "",
+      isUserEmpty: true,
       message: "",
       messages: [
-        {"user":"asdf","message":"asdf","id":"9789a310-0bd9-11ea-b160-3deabfe012b0","owner":true},
-        {"user":"ashioew","message":"asdf","id":"9789a310-0bd9-11ea-b160-3deabfe012b0","owner":false}
+        {
+          user: "asdf",
+          message: "asdf",
+          id: "9789a310-0bd9-11ea-b160-3deabfe012b0",
+          owner: true
+        },
+        {
+          user: "ashioew",
+          message: "asdf",
+          id: "9789a310-0bd9-11ea-b160-3deabfe012b0",
+          owner: false
+        }
       ],
       socket: io("localhost:3000")
     };
@@ -56,6 +71,9 @@ export default {
     },
     isOwner(user) {
       return user === this.user;
+    },
+    saveHandle() {
+      this.isUserEmpty = false;
     }
   },
   mounted() {
@@ -69,36 +87,36 @@ export default {
 </script>
 
 <style scoped>
-  .chat-container {
-    border: 1px #ccc solid;
-    border-radius: 0.2rem;
-    background-color: #fff;
-    /* padding: 10px 20px; */
-    padding-bottom: 0;
-  }
+.chat-container {
+  border: 1px #ccc solid;
+  border-radius: 0.2rem;
+  background-color: #fff;
+  /* padding: 10px 20px; */
+  padding-bottom: 0;
+}
 
-  .chat-footer {
-    background: #fafafa;
-    border-top: 1px #ccc solid;
-  }
+.chat-footer {
+  background: #fafafa;
+  border-top: 1px #ccc solid;
+}
 
-  .messages {
-    height: 450px;
-  }
+.messages {
+  height: 450px;
+}
 
-  .message {
-    width: 75%;
-    float: left;
-    height: auto;
-    border-radius: 0.43em;
-    color: white;
-    padding: 8px;
-    margin: 12px 0;
-    background: skyblue;
-  }
+.message {
+  width: 75%;
+  float: left;
+  height: auto;
+  border-radius: 0.43em;
+  color: white;
+  padding: 8px;
+  margin: 12px 0;
+  background: skyblue;
+}
 
-  .own {
-    float: right;
-    background: lightcoral;
-  }
+.own {
+  float: right;
+  background: lightcoral;
+}
 </style>
