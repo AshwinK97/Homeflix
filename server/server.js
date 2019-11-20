@@ -46,7 +46,7 @@ app.get("/signup", (req, res) => {
   if (!req.body.username || !req.body.password)
     return res.send("Invalid username or password.");
   db.addUser(req.body.username, req.body.password)
-    .then(isSuccess => {})
+    .then(isSuccess => { })
     .catch(err => {
       return console.log(err);
     });
@@ -100,4 +100,13 @@ app.get("*", (req, res) => {
   res.status(404).send("Error 404: url not found");
 });
 
-app.listen(config.port, () => console.log(`Listening on port: ${config.port}`));
+server = app.listen(config.port, () => console.log(`Listening on port: ${config.port}`));
+
+const io = require('socket.io').listen(server);
+
+io.on('connection', function (socket) {
+  console.log(socket.id)
+  socket.on('SEND_MESSAGE', function (data) {
+    io.emit('MESSAGE', data)
+  });
+});
