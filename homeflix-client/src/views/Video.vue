@@ -13,7 +13,6 @@
           </video>
         </v-col>
         <v-col cols="4">
-          <h2>Chat here!</h2>
           <Chat/>
         </v-col>
       </v-row>
