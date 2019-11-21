@@ -1,27 +1,40 @@
 <template>
   <v-app>
-    <v-app-bar
-      app
-      color="primary"
-      dark
-    >
+    <v-app-bar app color="primary" dark>
       <div class="d-flex align-center">Homeflix</div>
     </v-app-bar>
-
     <v-content>
-      <router-view ></router-view>
+      <Auth v-if="!this.authenticated" @toggleAuth="toggleAuth"/>
+      <router-view v-else></router-view>
     </v-content>
   </v-app>
 </template>
 
 <script>
+import Auth from "@/components/Auth.vue";
+
 export default {
-  name: 'App'
+  name: "App",
+  components: {
+    Auth
+  },
+  data() {
+    return {
+      userId: "",
+      authenticated: false
+    };
+  },
+  methods: {
+    toggleAuth(data) {
+      this.userId = data;
+      this.authenticated = true;
+    }
+  }
 };
 </script>
 
 <style>
-  .link {
-    text-decoration: none;
-  }
+.link {
+  text-decoration: none;
+}
 </style>

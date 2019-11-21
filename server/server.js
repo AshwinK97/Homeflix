@@ -27,36 +27,48 @@ app.use((req, res, next) => {
   next();
 });
 
-app.get("/login", (req, res) => {
-  if (!req.body.username || !req.body.password)
-    return res.send("Invalid username or password.");
+app.post("/login", (req, res) => {
+  if (!req.body.username || !req.body.password) {
+    return res.status(400).send("Invalid username or password.");
+  }
+
   db.getUser(req.body.username)
     .then(data => {
-      bcrypt.compare(req.body.password, data.password).then(isSuccess => {
-        if (!isSuccess) return res.send("Invalid username or password.");
-        return res.send("Successfully logged in.");
-      });
+      bcrypt.compare(req.body.password, data.password)
+        .then(isSuccess => {
+          if (!isSuccess) {
+            return res.status(400).send("Invalid username or password.");
+          } else {
+            return res.status(200).send("Successfully logged in.");
+          }
+        });
     })
     .catch(err => {
-      return res.send("Invalid username or password.");
+      return res.status(400).send("Invalid username or password.");
     });
 });
 
 app.get("/signup", (req, res) => {
-  if (!req.body.username || !req.body.password)
+  if (!req.body.username || !req.body.password) {
     return res.send("Invalid username or password.");
+  }
+
+  // Encrypt password before storing into DB
   bcrypt.hash(req.body.password, config.saltRounds).then(hash => {
+    // Store hash in your password DB.
     db.addUser(req.body.username, hash)
       .then(isSuccess => {
         if (isSuccess) {
-          res.redirect("/");
           console.log(`New user: ${req.body.username} created successfully.`);
+          res.sendStatus(204);
         } else {
-          res.send("Username already exists.");
+          console.log(err);
+          res.status(400).send("Username already exists.");
         }
       })
       .catch(err => {
-        return console.log(err);
+        console.log(err);
+        return res.status(500).send("Server Issue");
       });
   });
 });
