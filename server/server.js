@@ -45,11 +45,20 @@ app.get("/login", (req, res) => {
 app.get("/signup", (req, res) => {
   if (!req.body.username || !req.body.password)
     return res.send("Invalid username or password.");
-  db.addUser(req.body.username, req.body.password)
-    .then(isSuccess => {})
-    .catch(err => {
-      return console.log(err);
-    });
+  bcrypt.hash(req.body.password, config.saltRounds).then(hash => {
+    db.addUser(req.body.username, hash)
+      .then(isSuccess => {
+        if (isSuccess) {
+          res.redirect("/");
+          console.log(`New user: ${req.body.username} created successfully.`);
+        } else {
+          res.send("Username already exists.");
+        }
+      })
+      .catch(err => {
+        return console.log(err);
+      });
+  });
 });
 
 app.get("/video", auth.isAuth, (req, res) => {

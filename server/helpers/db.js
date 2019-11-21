@@ -44,7 +44,7 @@ const insert = (query, args) => {
     db.run(query, args, err => {
       closeDB(db);
       if (err) reject(err);
-      resolve("success");
+      resolve(true);
     });
   });
 };
@@ -84,10 +84,13 @@ const getUser = username => {
 
 const addUser = (username, password) => {
   console.log(`Adding user: ${username} to database.`);
-  return insert("INSERT INTO users (username, password) VALUES (?, ?)", [
-    username,
-    password
-  ]);
+  getUser(username).then(row => {
+    if (row) return false;
+    return insert("INSERT INTO users (username, password) VALUES (?, ?)", [
+      username,
+      password
+    ]);
+  });
 };
 
 const getVideoPath = id => {
@@ -100,4 +103,10 @@ const getAllVideos = () => {
   return selectAll("SELECT * FROM videos", []);
 };
 
-module.exports = { createTables, getUser, addUser, getVideoPath, getAllVideos };
+module.exports = {
+  createTables,
+  getUser,
+  addUser,
+  getVideoPath,
+  getAllVideos
+};
