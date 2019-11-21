@@ -9,7 +9,7 @@
       <v-row>
         <v-col cols="8">
           <video width="100%" controls ref="videoPlayer" class="video">
-            <source src="http://localhost:3000/video" type="video/mp4" />
+            <source :src="'http://localhost:3000/video/' + this.$route.params.id" type="video/mp4" />
           </video>
         </v-col>
         <v-col cols="4">

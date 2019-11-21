@@ -21,7 +21,7 @@ export default {
   data() {
     return {
       userId: "",
-      authenticated: false
+      authenticated: true
     };
   },
   methods: {

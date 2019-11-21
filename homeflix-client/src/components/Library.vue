@@ -1,27 +1,29 @@
 <template>
   <v-container>
-    <v-layout wrap>
-      <v-flex xs12 class="ma-5">
-        <h1 class="display-3">Library</h1>
-      </v-flex>
-      <v-flex class="mx-5" xs3 v-for="video in videos" :key="video.id">
+    <v-flex xs12 class="ma-5">
+      <h1 class="display-3">Library</h1>
+    </v-flex>
+    <v-row>
+      <v-col cols="12" sm="3" v-for="video in videos" :key="video.id">
         <router-link class="link" :to="'/video/' + video.id">
           <v-card min-width="350" min-height="200">
-            <v-img :src="video.thumbnail" height="200"></v-img>
+            <v-img src="@/assets/logo.png" height="200"></v-img>
             <v-card-title>
               <h2>{{ video.name }}</h2>
             </v-card-title>
           </v-card>
         </router-link>
-      </v-flex>
-    </v-layout>
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
   name: "Library",
-  data: () => {
+  data() {
     return {
       videos: [
         {
@@ -36,6 +38,16 @@ export default {
         }
       ]
     };
+  },
+  mounted() {
+    axios
+      .get("http://localhost:3000/videos")
+      .then(res => {
+        this.videos = res.data;
+      })
+      .catch(err => {
+        console.log(err);
+      });
   }
 };
 </script>

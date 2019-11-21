@@ -73,8 +73,9 @@ app.get("/signup", (req, res) => {
   });
 });
 
-app.get("/video", auth.isAuth, (req, res) => {
-  db.getVideoPath(2) // should be req.body.videoid
+app.get("/video/:id", auth.isAuth, (req, res) => {
+  console.log(req.params);
+  db.getVideoPath(req.params.id) 
     .then(data => {
       const path = data.path;
       const stat = fs.statSync(path);
