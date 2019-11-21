@@ -13,7 +13,7 @@
           </video>
         </v-col>
         <v-col cols="4">
-          <h2>Chat here!</h2>
+          <Chat/>
         </v-col>
       </v-row>
       <v-row>
@@ -30,8 +30,13 @@
 // import VideoPlayer from "@/components/VideoPlayer.vue";
 // import axios from "axios";
 
+import Chat from '@/components/Chat.vue'
+
 export default {
   name: "videoPage",
+  components: {
+    Chat
+  },
   computed: {
     videoElement() {
       return this.$refs.videoPlayer;

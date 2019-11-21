@@ -109,4 +109,15 @@ app.get("*", (req, res) => {
   res.status(404).send("Error 404: url not found");
 });
 
-app.listen(config.port, () => console.log(`Listening on port: ${config.port}`));
+server = app.listen(config.port, () =>
+  console.log(`Listening on port: ${config.port}`)
+);
+
+const io = require("socket.io").listen(server);
+
+io.on("connection", function(socket) {
+  console.log(socket.id);
+  socket.on("SEND_MESSAGE", function(data) {
+    io.emit("MESSAGE", data);
+  });
+});
