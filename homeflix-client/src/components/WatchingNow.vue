@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <v-flex xs12 class="ma-5">
-      <h1 class="display-3">Library</h1>
+      <h1 class="display-3">Watching Now</h1>
     </v-flex>
     <v-row>
       <v-col cols="12" sm="3" v-for="video in videos" :key="video.id">

@@ -26,11 +26,9 @@
 </template>
 
 <script>
-// @ is an alias to /src
-// import VideoPlayer from "@/components/VideoPlayer.vue";
-// import axios from "axios";
-
 import Chat from '@/components/Chat.vue'
+import io from "socket.io-client";
+import axios from "axios";
 
 export default {
   name: "videoPage",
@@ -44,18 +42,47 @@ export default {
   },
   mounted() {
     console.log(this.videoElement);
+    this.video.title = this.$route.params.title;
+    this.userId = this.$userId;
+
+    axios
+      .post("http://localhost:3000/addSync", {
+        user: this.$userId,
+        title: this.video.title
+      })
+      .then(res => {
+
+        this.enableSync();
+      })
+      .catch(err => {
+        console.log(err);
+      })
+  },
+  beforeDestroy() {
+    clearInterval(this.syncFn);
   },
   methods: {
     skip() {
-      // console.log("skip")
       this.videoElement.currentTime = 20;
+    },
+    enableSync() {
+      this.syncFn = setInterval(() => {
+        this.socket.emit("SYNC_VIDEO", {
+          user: this.userId,
+          video: this.video.title,
+          time: Math.floor(this.videoElement.currentTime)
+        })
+      }, 2000);
     }
   },
   data() {
     return {
       video: {
-        title: "Gimme da penta"
-      }
+        title: ""
+      },
+      userId: "",
+      socket: io("localhost:3000"),
+      syncFn: null
     };
   }
 };

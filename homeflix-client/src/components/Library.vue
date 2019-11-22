@@ -5,7 +5,7 @@
     </v-flex>
     <v-row>
       <v-col cols="12" sm="3" v-for="video in videos" :key="video.id">
-        <router-link class="link" :to="'/video/' + video.id">
+        <router-link class="link" :to="{name: 'video', params: {id: video.id, title: video.name }}">
           <v-card min-width="350" min-height="200">
             <v-img src="@/assets/logo.png" height="200"></v-img>
             <v-card-title>

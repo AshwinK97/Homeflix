@@ -7,6 +7,8 @@ import Chat from 'vue-beautiful-chat'
 Vue.config.productionTip = false
 Vue.use(Chat);
 
+Vue.prototype.$userId = "Kaushal";
+
 new Vue({
   router,
   vuetify,

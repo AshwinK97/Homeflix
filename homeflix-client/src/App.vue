@@ -20,14 +20,15 @@ export default {
   },
   data() {
     return {
-      userId: "",
       authenticated: true
     };
   },
   methods: {
     toggleAuth(data) {
-      this.userId = data;
+      this.$userId = data;
       this.authenticated = true;
+
+      console.log(this.$userId);
     }
   }
 };

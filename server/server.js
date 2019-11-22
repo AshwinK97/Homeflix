@@ -6,9 +6,12 @@ const session = require("express-session");
 
 const auth = require("./helpers/auth");
 const db = require("./helpers/db");
+const sync = require("./helpers/sync");
 const config = require("./config");
 
+
 const app = express();
+
 app.use(
   session({
     secret: config.secret,
@@ -118,6 +121,15 @@ app.get("/initializedb", auth.isAuth, (req, res) => {
   res.send("Database created.");
 });
 
+app.post("/addSync", (req, res) => {
+  // Add try catch
+  const user = req.body.user;
+  const title = req.body.title;
+  sync.syncTable.insert({"user": user, "title": title, "time": 0});
+
+  res.sendStatus(204);
+});
+
 app.get("*", (req, res) => {
   res.status(404).send("Error 404: url not found");
 });
@@ -129,8 +141,18 @@ server = app.listen(config.port, () =>
 const io = require("socket.io").listen(server);
 
 io.on("connection", function(socket) {
-  console.log(socket.id);
+  // console.log(socket.id);
   socket.on("SEND_MESSAGE", function(data) {
     io.emit("MESSAGE", data);
   });
+
+  socket.on("SYNC_VIDEO", function(data) {
+    // console.log(data);
+    let row = sync.syncTable({user: data.user, title: data.video})
+    row.update({time: data.time});
+
+    console.log(row.first());
+    // Do something with data here, format: {user: String, video: String, time: Math.Floor(number)}
+    // Emit time data back to String value of "SYNC_"user + "_" + video
+  })
 });
