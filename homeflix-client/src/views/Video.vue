@@ -8,7 +8,7 @@
       </v-row>
       <v-row>
         <v-col cols="8">
-          <video width="100%" controls ref="videoPlayer" class="video">
+          <video width="100%" controls autoplay ref="videoPlayer" class="video">
             <source :src="'http://localhost:3000/video/' + this.$route.params.id" type="video/mp4" />
           </video>
         </v-col>
@@ -43,12 +43,14 @@ export default {
   mounted() {
     console.log(this.videoElement);
     this.video.title = this.$route.params.title;
+    this.video.id = this.$route.params.id;
     this.userId = this.$userId;
 
     axios
       .post("http://localhost:3000/addSync", {
         user: this.$userId,
-        title: this.video.title
+        title: this.video.title,
+        id: this.video.id
       })
       .then(res => {
 
@@ -60,6 +62,14 @@ export default {
   },
   beforeDestroy() {
     clearInterval(this.syncFn);
+    axios
+      .post("http://localhost:3000/removeSync", {
+        user: this.$userId,
+        id: this.video.id
+      })
+      .catch(err => {
+        console.log(err);
+      })
   },
   methods: {
     skip() {
@@ -70,6 +80,7 @@ export default {
         this.socket.emit("SYNC_VIDEO", {
           user: this.userId,
           video: this.video.title,
+          id: this.video.id,
           time: Math.floor(this.videoElement.currentTime)
         })
       }, 2000);
@@ -78,7 +89,8 @@ export default {
   data() {
     return {
       video: {
-        title: ""
+        title: "",
+        id: 0
       },
       userId: "",
       socket: io("localhost:3000"),

@@ -116,6 +116,11 @@ app.get("/videos", auth.isAuth, (req, res) => {
     .catch(err => console.error(err));
 });
 
+app.get("/activeVideos", auth.isAuth, (req, res) => {
+  data = sync.syncTable().get();
+  res.send(data);
+});
+
 app.get("/initializedb", auth.isAuth, (req, res) => {
   db.createTables();
   res.send("Database created.");
@@ -125,10 +130,20 @@ app.post("/addSync", (req, res) => {
   // Add try catch
   const user = req.body.user;
   const title = req.body.title;
-  sync.syncTable.insert({"user": user, "title": title, "time": 0});
+  const videoid = req.body.id;
+  sync.syncTable.insert({"user": user, "title": title, "videoid": videoid,"time": 0});
 
   res.sendStatus(204);
 });
+
+app.post("/removeSync", (req, res) => {
+  const result = sync.syncTable({user: req.body.user, videoid: req.body.id}).remove();
+  if(result > 0) {
+    res.sendStatus(204);
+  } else {
+    res.status(400).send("data incompatible");
+  }
+})
 
 app.get("*", (req, res) => {
   res.status(404).send("Error 404: url not found");
@@ -147,11 +162,11 @@ io.on("connection", function(socket) {
   });
 
   socket.on("SYNC_VIDEO", function(data) {
-    // console.log(data);
-    let row = sync.syncTable({user: data.user, title: data.video})
+    console.log("Capturing time from: " + data.user + " watching " + data.video + "... time = " + data.time);
+    let row = sync.syncTable({user: data.user, videoid: data.id})
     row.update({time: data.time});
-
-    console.log(row.first());
+    
+    io.emit("SYNC_VIDEO_TIME", data.time);
     // Do something with data here, format: {user: String, video: String, time: Math.Floor(number)}
     // Emit time data back to String value of "SYNC_"user + "_" + video
   })
