@@ -19,12 +19,12 @@
       </v-row>
       <v-row align="center" class="chat-footer">
         <v-col sm="10">
-          <v-text-field v-if="isUserEmpty" v-model="user" label="User Handle" required></v-text-field>
-          <v-text-field v-else v-model="message" label="Message" required></v-text-field>
+          <!-- <v-text-field v-if="isUserEmpty" v-model="user" label="User Handle" required></v-text-field> -->
+          <v-text-field v-model="message" label="Message" required></v-text-field>
         </v-col>
         <v-col sm="2">
-          <v-btn v-if="isUserEmpty" v-on:click="saveHandle">Submit</v-btn>
-          <v-btn v-else v-on:click="sendMessage">Send</v-btn>
+          <!-- <v-btn v-if="isUserEmpty" v-on:click="saveHandle">Submit</v-btn> -->
+          <v-btn v-on:click="sendMessage">Send</v-btn>
         </v-col>
       </v-row>
     </v-container>
@@ -39,7 +39,7 @@ export default {
   data() {
     return {
       user: "",
-      isUserEmpty: true,
+      // isUserEmpty: true,
       message: "",
       messages: [
         {
@@ -77,6 +77,8 @@ export default {
     }
   },
   mounted() {
+    this.user = this.$userId;
+
     this.socket.on("MESSAGE", data => {
       data.owner = this.isOwner(data.user);
       this.messages = [...this.messages, data];
