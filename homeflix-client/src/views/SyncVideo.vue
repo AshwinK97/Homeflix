@@ -45,7 +45,7 @@ export default {
     this.syncOn = true;
     this.userId = this.$userId;
 
-    this.socket.on("SYNC_VIDEO_TIME", syncTime => {
+    this.socket.on("SYNC_VIDEO_TIME_" + this.syncUser + "_" + this.video.id, syncTime => {
       const videoTime = this.videoElement.currentTime;
 
       if (Math.abs(syncTime - videoTime) > 4 && this.syncOn) {

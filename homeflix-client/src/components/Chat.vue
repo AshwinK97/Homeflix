@@ -39,7 +39,7 @@ export default {
   data() {
     return {
       user: "",
-      // isUserEmpty: true,
+      chatId: undefined,
       message: "",
       messages: [
         {
@@ -65,7 +65,8 @@ export default {
       this.socket.emit("SEND_MESSAGE", {
         user: this.user,
         message: this.message,
-        id: uuid.v1()
+        id: uuid.v1(),
+        chatId: this.chatId
       });
       this.message = "";
     },
@@ -78,8 +79,9 @@ export default {
   },
   mounted() {
     this.user = this.$userId;
+    this.chatId = this.$route.params.title;
 
-    this.socket.on("MESSAGE", data => {
+    this.socket.on("MESSAGE_" + this.chatId, data => {
       data.owner = this.isOwner(data.user);
       this.messages = [...this.messages, data];
       // you can also do this.messages.push(data)

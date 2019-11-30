@@ -158,7 +158,7 @@ const io = require("socket.io").listen(server);
 io.on("connection", function(socket) {
   // console.log(socket.id);
   socket.on("SEND_MESSAGE", function(data) {
-    io.emit("MESSAGE", data);
+    io.emit("MESSAGE_" + data.chatId, data);
   });
 
   socket.on("SYNC_VIDEO", function(data) {
@@ -166,7 +166,7 @@ io.on("connection", function(socket) {
     let row = sync.syncTable({user: data.user, videoid: data.id})
     row.update({time: data.time});
     
-    io.emit("SYNC_VIDEO_TIME", data.time);
+    io.emit("SYNC_VIDEO_TIME_" + data.user + "_" + data.id, data.time);
     // Do something with data here, format: {user: String, video: String, time: Math.Floor(number)}
     // Emit time data back to String value of "SYNC_"user + "_" + video
   })
