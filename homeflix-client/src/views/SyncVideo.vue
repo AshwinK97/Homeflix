@@ -48,7 +48,7 @@ export default {
     this.socket.on("SYNC_VIDEO_TIME", syncTime => {
       const videoTime = this.videoElement.currentTime;
 
-      if (syncTime - videoTime > 5 && this.syncOn) {
+      if (Math.abs(syncTime - videoTime) > 4 && this.syncOn) {
         this.videoElement.currentTime = syncTime;
       }
     });
