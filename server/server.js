@@ -77,7 +77,7 @@ app.get("/signup", (req, res) => {
   });
 });
 
-app.get("/upload", auth.isAuth, (req, res) => {
+app.post("/upload", auth.isAuth, (req, res) => {
   if (!req.files || Object.keys(req.files).length === 0) {
     return res.status(400).send("No files were uploaded");
   }
@@ -88,7 +88,7 @@ app.get("/upload", auth.isAuth, (req, res) => {
       thumbnailPath: `./thumbnails`
     })
       .generate()
-      .then(res.send);
+      .then(res.sendStatus(204));
   });
 });
 
