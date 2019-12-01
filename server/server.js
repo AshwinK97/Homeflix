@@ -4,7 +4,7 @@ const express = require("express");
 const fileUpload = require("express-fileupload");
 const session = require("express-session");
 const fs = require("fs");
-const vtg = require("video-thumbnail-generator").ThumbnailGenerator;
+const thumbler = require("thumbler");
 
 const auth = require("./helpers/auth");
 const db = require("./helpers/db");
@@ -13,6 +13,7 @@ const config = require("./config");
 
 const app = express();
 
+app.use(express.static("thumbnails"));
 app.use(fileUpload());
 app.use(
   session({
@@ -78,19 +79,26 @@ app.get("/signup", (req, res) => {
 });
 
 app.post("/upload", auth.isAuth, (req, res) => {
-  console.log(req.files);
   if (!req.files || Object.keys(req.files).length === 0) {
     return res.status(400).send("No files were uploaded");
   }
-  req.files.video.mv(`./videos/${req.files.video.name}`, err => {
-    console.error(err);
+  const video = req.files.video;
+  let name = video.name.substring(0, video.name.lastIndexOf("."));
+  video.mv(`./videos/${video.name}`, err => {
     if (err) return res.status(500).send(err);
-    ThumbnailGenerator({
-      sourcePath: `./videos/${req.files.video.name}`,
-      thumbnailPath: `./thumbnails`
-    })
-      .generate()
-      .then(res.sendStatus(204));
+    thumbler(
+      {
+        type: "video",
+        input: `./videos/${video.name}`,
+        output: `./thumbnails/${name}.jpeg`,
+        time: "00:00:22",
+        size: "300x200"
+      },
+      (err, path) => {
+        if (err) return console.error(err);
+        return console.log(`thumbnail stored at ${path}`);
+      }
+    );
   });
 });
 

@@ -26,6 +26,6 @@
     "socket.io": "^2.3.0",
     "sqlite3": "^4.1.0",
     "taffy": "^2.6.2",
-    "video-thumbnail-generator": "^1.1.3"
+    "thumbler": "^1.1.2"
   }
 }
