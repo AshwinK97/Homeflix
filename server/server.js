@@ -78,10 +78,12 @@ app.get("/signup", (req, res) => {
 });
 
 app.post("/upload", auth.isAuth, (req, res) => {
+  console.log(req.files);
   if (!req.files || Object.keys(req.files).length === 0) {
     return res.status(400).send("No files were uploaded");
   }
-  req.files.video.mv("./videos", err => {
+  req.files.video.mv(`./videos/${req.files.video.name}`, err => {
+    console.error(err);
     if (err) return res.status(500).send(err);
     ThumbnailGenerator({
       sourcePath: `./videos/${req.files.video.name}`,

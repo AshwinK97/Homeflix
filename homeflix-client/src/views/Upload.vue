@@ -38,22 +38,28 @@ export default {
   },
   methods: {
     uploadVideo() {
+      console.log(this.videoFile);
       this.isFileVideo();
+
+      let formData = new FormData();
+      formData.append("video", this.videoFile);
+
+      axios
+        .post("http://localhost:3000/upload", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data"
+          }
+        })
+        .then()
+        .catch(err => {
+          this.snackbar = true;
+          this.snackbarText = err;
+          console.log(err);
+        });
     },
     isFileVideo() {
       if (this.videoFile.type.substring(0, 5) !== "video") {
         this.notVideoError();
-      } else {
-        // Axios here
-        axios
-          .post("http://localhost:3000/upload", {
-            video: this.videoFile
-          })
-          .then()
-          .catch(err => {
-            this.snackbar = true;
-            this.snackbarText = err;
-          })
       }
     },
     notVideoError() {
