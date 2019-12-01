@@ -1,17 +1,19 @@
 const bcrypt = require("bcrypt");
 const bodyParser = require("body-parser");
 const express = require("express");
-const fs = require("fs");
+const fileUpload = require("express-fileupload");
 const session = require("express-session");
+const fs = require("fs");
+const vtg = require("video-thumbnail-generator").ThumbnailGenerator;
 
 const auth = require("./helpers/auth");
 const db = require("./helpers/db");
 const sync = require("./helpers/sync");
 const config = require("./config");
 
-
 const app = express();
 
+app.use(fileUpload());
 app.use(
   session({
     secret: config.secret,
@@ -37,14 +39,13 @@ app.post("/login", (req, res) => {
 
   db.getUser(req.body.username)
     .then(data => {
-      bcrypt.compare(req.body.password, data.password)
-        .then(isSuccess => {
-          if (!isSuccess) {
-            return res.status(400).send("Invalid username or password.");
-          } else {
-            return res.status(200).send("Successfully logged in.");
-          }
-        });
+      bcrypt.compare(req.body.password, data.password).then(isSuccess => {
+        if (!isSuccess) {
+          return res.status(400).send("Invalid username or password.");
+        } else {
+          return res.status(200).send("Successfully logged in.");
+        }
+      });
     })
     .catch(err => {
       return res.status(400).send("Invalid username or password.");
@@ -76,9 +77,24 @@ app.get("/signup", (req, res) => {
   });
 });
 
+app.get("/upload", auth.isAuth, (req, res) => {
+  if (!req.files || Object.keys(req.files).length === 0) {
+    return res.status(400).send("No files were uploaded");
+  }
+  req.files.video.mv("./videos", err => {
+    if (err) return res.status(500).send(err);
+    ThumbnailGenerator({
+      sourcePath: `./videos/${req.files.video.name}`,
+      thumbnailPath: `./thumbnails`
+    })
+      .generate()
+      .then(res.send);
+  });
+});
+
 app.get("/video/:id", auth.isAuth, (req, res) => {
   console.log(req.params);
-  db.getVideoPath(req.params.id) 
+  db.getVideoPath(req.params.id)
     .then(data => {
       const path = data.path;
       const stat = fs.statSync(path);
@@ -131,19 +147,26 @@ app.post("/addSync", (req, res) => {
   const user = req.body.user;
   const title = req.body.title;
   const videoid = req.body.id;
-  sync.syncTable.insert({"user": user, "title": title, "videoid": videoid,"time": 0});
+  sync.syncTable.insert({
+    user: user,
+    title: title,
+    videoid: videoid,
+    time: 0
+  });
 
   res.sendStatus(204);
 });
 
 app.post("/removeSync", (req, res) => {
-  const result = sync.syncTable({user: req.body.user, videoid: req.body.id}).remove();
-  if(result > 0) {
+  const result = sync
+    .syncTable({ user: req.body.user, videoid: req.body.id })
+    .remove();
+  if (result > 0) {
     res.sendStatus(204);
   } else {
     res.status(400).send("data incompatible");
   }
-})
+});
 
 app.get("*", (req, res) => {
   res.status(404).send("Error 404: url not found");
@@ -162,12 +185,19 @@ io.on("connection", function(socket) {
   });
 
   socket.on("SYNC_VIDEO", function(data) {
-    console.log("Capturing time from: " + data.user + " watching " + data.video + "... time = " + data.time);
-    let row = sync.syncTable({user: data.user, videoid: data.id})
-    row.update({time: data.time});
-    
+    console.log(
+      "Capturing time from: " +
+        data.user +
+        " watching " +
+        data.video +
+        "... time = " +
+        data.time
+    );
+    let row = sync.syncTable({ user: data.user, videoid: data.id });
+    row.update({ time: data.time });
+
     io.emit("SYNC_VIDEO_TIME_" + data.user + "_" + data.id, data.time);
     // Do something with data here, format: {user: String, video: String, time: Math.Floor(number)}
     // Emit time data back to String value of "SYNC_"user + "_" + video
-  })
+  });
 });
