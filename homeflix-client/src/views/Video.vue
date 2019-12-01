@@ -67,6 +67,9 @@ export default {
         user: this.$userId,
         id: this.video.id
       })
+      .then(res => {
+        console.log("Video removed from sync");
+      })
       .catch(err => {
         console.log(err);
       })

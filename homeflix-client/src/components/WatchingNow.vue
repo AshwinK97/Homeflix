@@ -25,18 +25,7 @@ export default {
   name: "WatchingNow",
   data() {
     return {
-      videos: [
-        {
-          id: 0,
-          name: "Video 1",
-          thumbnail: "../assets/logo.png"
-        },
-        {
-          id: 1,
-          name: "Video 2",
-          thumbnail: "../assets/logo.png"
-        }
-      ]
+      videos: []
     };
   },
   mounted() {

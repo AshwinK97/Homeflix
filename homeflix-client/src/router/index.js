@@ -3,6 +3,7 @@ import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
 import Video from '../views/Video.vue';
 import SyncVideo from '../views/SyncVideo.vue';
+import Upload from '../views/Upload.vue';
 
 Vue.use(VueRouter)
 
@@ -23,6 +24,11 @@ const routes = [
     name: 'syncVideo',
     component: SyncVideo,
     props: true
+  },
+  {
+    path: '/upload',
+    name: 'upload',
+    component: Upload
   }
 ]
 

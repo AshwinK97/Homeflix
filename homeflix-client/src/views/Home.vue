@@ -6,7 +6,6 @@
 </template>
 
 <script>
-// @ is an alias to /src
 import Library from '@/components/Library.vue'
 import WatchingNow from '@/components/WatchingNow.vue'
 
