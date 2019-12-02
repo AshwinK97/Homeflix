@@ -10,6 +10,7 @@ const auth = require("./helpers/auth");
 const db = require("./helpers/db");
 const sync = require("./helpers/sync");
 const config = require("./config");
+const math = require("./helpers/math");
 
 const app = express();
 
@@ -83,19 +84,29 @@ app.post("/upload", auth.isAuth, (req, res) => {
     return res.status(400).send("No files were uploaded");
   }
   const video = req.files.video;
-  let name = video.name.substring(0, video.name.lastIndexOf("."));
-  video.mv(`./videos/${video.name}`, err => {
+  let fullname = video.name.replace(/ /g, "_");
+  let name =
+    fullname.substring(0, video.name.lastIndexOf(".")) +
+    "_" +
+    math.getRandomInt(1, 99999);
+  let extension = fullname.substring(video.name.lastIndexOf("."), name.length);
+
+  video.mv(`./videos/${name + extension}`, err => {
     if (err) return res.status(500).send(err);
+    db.addVideo(name, `./videos/${name + extension}`);
     thumbler(
       {
         type: "video",
-        input: `./videos/${video.name}`,
+        input: `./videos/${name + extension}`,
         output: `./thumbnails/${name}.jpeg`,
-        time: "00:00:22",
-        size: "300x200"
+        time: "00:00:30",
+        size: "640x480"
       },
       (err, path) => {
         if (err) return console.error(err);
+
+        // encrypt video, delete unencrypted one
+
         return console.log(`thumbnail stored at ${path}`);
       }
     );
@@ -103,7 +114,6 @@ app.post("/upload", auth.isAuth, (req, res) => {
 });
 
 app.get("/video/:id", auth.isAuth, (req, res) => {
-  console.log(req.params);
   db.getVideoPath(req.params.id)
     .then(data => {
       const path = data.path;

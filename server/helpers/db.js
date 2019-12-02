@@ -103,10 +103,16 @@ const getAllVideos = () => {
   return selectAll("SELECT * FROM videos", []);
 };
 
+const addVideo = (name, path) => {
+  console.log(`Adding video: ${path} to database.`);
+  return insert("INSERT INTO videos (name, path) VALUES (?, ?)", [name, path]);
+};
+
 module.exports = {
   createTables,
   getUser,
   addUser,
   getVideoPath,
-  getAllVideos
+  getAllVideos,
+  addVideo
 };
