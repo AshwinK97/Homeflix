@@ -2,7 +2,7 @@
   <v-app>
     <v-app-bar app color="primary" dark>
       <div class="d-flex align-center">
-        <p style="margin: 0">Logged in as {{this.$userId}}</p>
+        <p style="margin: 0">Logged in as {{$userId}}</p>
       </div>
       <v-spacer></v-spacer>
       <router-link to="/">
@@ -37,15 +37,13 @@ export default {
   },
   data() {
     return {
-      authenticated: true
+      authenticated: false
     };
   },
   methods: {
     toggleAuth(data) {
       this.$userId = data;
       this.authenticated = true;
-
-      console.log(this.$userId);
     }
   }
 };

@@ -43,7 +43,7 @@ export default {
     this.video.title = this.$route.params.title;
     this.video.id = this.$route.params.id;
     this.userId = this.$userId;
-
+    console.log("video "+this.$userId);
     axios
       .post("http://"+this.$serverIP+":3000/addSync", {
         user: this.$userId,
@@ -78,7 +78,7 @@ export default {
     enableSync() {
       this.syncFn = setInterval(() => {
         this.socket.emit("SYNC_VIDEO", {
-          user: this.userId,
+          user: this.$userId,
           video: this.video.title,
           id: this.video.id,
           time: Math.floor(this.videoElement.currentTime)
