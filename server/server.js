@@ -114,7 +114,10 @@ app.post("/upload", auth.isAuth, (req, res) => {
             if (err) return console.error(err);
             console.log("encryption success");
             db.addVideo(name, `./videos/${name + extension}`);
-            fs.unlinkSync(`./staging/${name + extension}`);
+            fs.unlink(`./staging/${name + extension}`, err => {
+              if (err) console.error(err);
+              console.log("file removed from staging");
+            });
           }
         );
 
@@ -125,10 +128,10 @@ app.post("/upload", auth.isAuth, (req, res) => {
 });
 
 app.get("/video/:id", auth.isAuth, (req, res) => {
-  db.getVideoPath(req.params.id).then(data => {
-    const path = data.path.replace("videos", "staging");
-    encrypt
-      .decryptFile(`${data.path}`, `${path}`, config.secret, err => {
+  db.getVideoPath(req.params.id)
+    .then(data => {
+      const path = data.path.replace("videos", "staging");
+      encrypt.decryptFile(`${data.path}`, `${path}`, config.secret, err => {
         if (err) return console.error(err);
         console.log("decryption success");
 
@@ -157,10 +160,13 @@ app.get("/video/:id", auth.isAuth, (req, res) => {
           res.writeHead(200, head);
           fs.createReadStream(path).pipe(res);
         }
-        fs.unlinkSync(path);
-      })
-      .catch(err => console.error(err));
-  });
+        fs.unlink(path, err => {
+          if (err) console.error(err);
+          console.log("file removed from staging");
+        });
+      });
+    })
+    .catch(err => console.error(err));
 });
 
 app.get("/videos", auth.isAuth, (req, res) => {
