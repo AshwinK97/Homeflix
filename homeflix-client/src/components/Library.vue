@@ -7,9 +7,9 @@
       <v-col cols="12" sm="3" v-for="video in videos" :key="video.id">
         <router-link class="link" :to="{name: 'video', params: {id: video.id, title: video.name }}">
           <v-card min-width="350" min-height="200">
-            <v-img src="@/assets/logo.png" height="200"></v-img>
+            <v-img :src="'http://' + $serverIP + ':3000/' + video.name + '.jpeg'" height="200"></v-img>
             <v-card-title>
-              <h2>{{ video.name }}</h2>
+              <h2>{{ video.name.substring(0, video.name.lastIndexOf("_")).replace(/_/g, " ") }}</h2>
             </v-card-title>
           </v-card>
         </router-link>
@@ -25,23 +25,12 @@ export default {
   name: "Library",
   data() {
     return {
-      videos: [
-        {
-          id: 0,
-          name: "Video 1",
-          thumbnail: "../assets/logo.png"
-        },
-        {
-          id: 1,
-          name: "Video 2",
-          thumbnail: "../assets/logo.png"
-        }
-      ]
+      videos: []
     };
   },
   mounted() {
     axios
-      .get("http://localhost:3000/videos")
+      .get("http://" + this.$serverIP + ":3000/videos")
       .then(res => {
         this.videos = res.data;
       })

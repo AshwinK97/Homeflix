@@ -64,7 +64,7 @@ export default {
   methods: {
     authLogin() {
       axios
-        .post("http://localhost:3000/login", {
+        .post("http://"+ this.$serverIP +":3000/login", {
           username: this.userId,
           password: this.password
         })
@@ -85,7 +85,7 @@ export default {
       }
 
       axios
-        .post("http://localhost:3000/signup", {
+        .post("http://"+this.$serverIP+":3000/signup", {
           username: this.userId,
           password: this.password
         })

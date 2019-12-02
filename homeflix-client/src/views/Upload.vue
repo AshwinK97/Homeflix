@@ -38,19 +38,20 @@ export default {
   },
   methods: {
     uploadVideo() {
-      console.log(this.videoFile);
       this.isFileVideo();
 
       let formData = new FormData();
       formData.append("video", this.videoFile);
 
       axios
-        .post("http://localhost:3000/upload", formData, {
+        .post("http://"+this.$serverIP+":3000/upload", formData, {
           headers: {
             "Content-Type": "multipart/form-data"
           }
         })
-        .then()
+        .then(res => {
+          this.$router.push("/");
+        })
         .catch(err => {
           this.snackbar = true;
           this.snackbarText = err;

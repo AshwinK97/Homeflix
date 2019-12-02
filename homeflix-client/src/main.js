@@ -8,6 +8,7 @@ Vue.config.productionTip = false
 Vue.use(Chat);
 
 Vue.prototype.$userId = "Kaushal";
+Vue.prototype.$serverIP = window.location.hostname;
 
 new Vue({
   router,

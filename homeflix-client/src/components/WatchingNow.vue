@@ -7,9 +7,9 @@
       <v-col cols="12" sm="3" v-for="video in videos" :key="video.id">
         <router-link class="link" :to="{name: 'syncVideo', params: {user: video.user, id: video.videoid, title: video.title }}">
           <v-card min-width="350" min-height="200">
-            <v-img src="@/assets/logo.png" height="200"></v-img>
+            <v-img :src="'http://'+$serverIP+':3000/' + video.title + '.jpeg'" height="200"></v-img>
             <v-card-title>
-              <h2>{{ video.title }}</h2>
+              <h2>{{ video.title.substring(0, video.title.lastIndexOf("_")).replace(/_/g, " ") }}</h2>
             </v-card-title>
           </v-card>
         </router-link>
@@ -30,7 +30,7 @@ export default {
   },
   mounted() {
     axios
-      .get("http://localhost:3000/activeVideos")
+      .get("http://"+this.$serverIP+":3000/activeVideos")
       .then(res => {
         console.log(res.data);
         this.videos = res.data;

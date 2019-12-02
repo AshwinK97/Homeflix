@@ -3,7 +3,7 @@
     <v-container class="chat-container" lg="3">
       <v-row>
         <v-col>
-          <h3>Chat Group</h3>
+          <h3>{{this.chatId.substring(0, this.chatId.lastIndexOf("_")).replace(/_/g, " ")}} Chat Group</h3>
           <hr />
         </v-col>
       </v-row>
@@ -19,11 +19,9 @@
       </v-row>
       <v-row align="center" class="chat-footer">
         <v-col sm="10">
-          <!-- <v-text-field v-if="isUserEmpty" v-model="user" label="User Handle" required></v-text-field> -->
           <v-text-field v-model="message" label="Message" required></v-text-field>
         </v-col>
         <v-col sm="2">
-          <!-- <v-btn v-if="isUserEmpty" v-on:click="saveHandle">Submit</v-btn> -->
           <v-btn v-on:click="sendMessage">Send</v-btn>
         </v-col>
       </v-row>
@@ -41,21 +39,8 @@ export default {
       user: "",
       chatId: undefined,
       message: "",
-      messages: [
-        {
-          user: "asdf",
-          message: "asdf",
-          id: "9789a310-0bd9-11ea-b160-4fasdfe012b0",
-          owner: true
-        },
-        {
-          user: "ashioew",
-          message: "asdf",
-          id: "9789a310-0bd9-11ea-b160-3deabfe012b0",
-          owner: false
-        }
-      ],
-      socket: io("localhost:3000")
+      messages: [],
+      socket: io(this.$serverIP + ":3000")
     };
   },
   methods: {
