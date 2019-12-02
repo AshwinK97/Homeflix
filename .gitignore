@@ -1,9 +1,6 @@
 # vscode
 .vscode
 
-# videos
-*.mp4
-
 # Logs
 logs
 *.log
