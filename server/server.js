@@ -1,6 +1,7 @@
 const bcrypt = require("bcrypt");
 const bodyParser = require("body-parser");
 const express = require("express");
+const encrypt = require("file-encrypt");
 const fileUpload = require("express-fileupload");
 const session = require("express-session");
 const fs = require("fs");
@@ -83,6 +84,7 @@ app.post("/upload", auth.isAuth, (req, res) => {
   if (!req.files || Object.keys(req.files).length === 0) {
     return res.status(400).send("No files were uploaded");
   }
+
   const video = req.files.video;
   let fullname = video.name.replace(/ /g, "_");
   let name =
@@ -91,21 +93,30 @@ app.post("/upload", auth.isAuth, (req, res) => {
     math.getRandomInt(1, 99999);
   let extension = fullname.substring(video.name.lastIndexOf("."), name.length);
 
-  video.mv(`./videos/${name + extension}`, err => {
+  video.mv(`./staging/${name + extension}`, err => {
     if (err) return res.status(500).send(err);
-    db.addVideo(name, `./videos/${name + extension}`);
     thumbler(
       {
         type: "video",
-        input: `./videos/${name + extension}`,
+        input: `./staging/${name + extension}`,
         output: `./thumbnails/${name}.jpeg`,
-        time: "00:00:30",
         size: "640x480"
       },
       (err, path) => {
         if (err) return console.error(err);
 
         // encrypt video, delete unencrypted one
+        encrypt.encryptFile(
+          `./staging/${name + extension}`,
+          `./videos/${name + extension}`,
+          config.secret,
+          err => {
+            if (err) return console.error(err);
+            console.log("encryption success");
+            db.addVideo(name, `./videos/${name + extension}`);
+            fs.unlinkSync(`./staging/${name + extension}`);
+          }
+        );
 
         return console.log(`thumbnail stored at ${path}`);
       }
@@ -114,36 +125,42 @@ app.post("/upload", auth.isAuth, (req, res) => {
 });
 
 app.get("/video/:id", auth.isAuth, (req, res) => {
-  db.getVideoPath(req.params.id)
-    .then(data => {
-      const path = data.path;
-      const stat = fs.statSync(path);
-      const fileSize = stat.size;
-      const range = req.headers.range;
-      if (range) {
-        const parts = range.replace(/bytes=/, "").split("-");
-        const start = parseInt(parts[0], 10);
-        const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
-        const chunksize = end - start + 1;
-        const file = fs.createReadStream(path, { start, end });
-        const head = {
-          "Content-Range": `bytes ${start}-${end}/${fileSize}`,
-          "Accept-Ranges": "bytes",
-          "Content-Length": chunksize,
-          "Content-Type": "video/mp4"
-        };
-        res.writeHead(206, head);
-        file.pipe(res);
-      } else {
-        const head = {
-          "Content-Length": fileSize,
-          "Content-Type": "video/mp4"
-        };
-        res.writeHead(200, head);
-        fs.createReadStream(path).pipe(res);
-      }
-    })
-    .catch(err => console.error(err));
+  db.getVideoPath(req.params.id).then(data => {
+    const path = data.path.replace("videos", "staging");
+    encrypt
+      .decryptFile(`${data.path}`, `${path}`, config.secret, err => {
+        if (err) return console.error(err);
+        console.log("decryption success");
+
+        const stat = fs.statSync(path);
+        const fileSize = stat.size;
+        const range = req.headers.range;
+        if (range) {
+          const parts = range.replace(/bytes=/, "").split("-");
+          const start = parseInt(parts[0], 10);
+          const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
+          const chunksize = end - start + 1;
+          const file = fs.createReadStream(path, { start, end });
+          const head = {
+            "Content-Range": `bytes ${start}-${end}/${fileSize}`,
+            "Accept-Ranges": "bytes",
+            "Content-Length": chunksize,
+            "Content-Type": "video/mp4"
+          };
+          res.writeHead(206, head);
+          file.pipe(res);
+        } else {
+          const head = {
+            "Content-Length": fileSize,
+            "Content-Type": "video/mp4"
+          };
+          res.writeHead(200, head);
+          fs.createReadStream(path).pipe(res);
+        }
+        fs.unlinkSync(path);
+      })
+      .catch(err => console.error(err));
+  });
 });
 
 app.get("/videos", auth.isAuth, (req, res) => {

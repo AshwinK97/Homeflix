@@ -61,18 +61,7 @@ const createTables = () => {
         console.log("Users table created and populated.");
       }
     );
-
     db.run(config.createVideosQuery);
-    db.run(
-      "INSERT INTO videos(name, path) VALUES(?, ?)",
-      ["Apex cucks Fornite", "./videos/apex.mp4"],
-      err => {
-        if (err) return console.error(err.message);
-        console.log("Videos table created and populated.");
-      }
-    );
-
-    db.run(config.createUserVideoQuery);
   });
   closeDB(db);
 };
