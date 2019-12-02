@@ -3,6 +3,7 @@ const bodyParser = require("body-parser");
 const express = require("express");
 const encrypt = require("file-encrypt");
 const fileUpload = require("express-fileupload");
+const ip = require("ip");
 const session = require("express-session");
 const fs = require("fs");
 const thumbler = require("thumbler");
@@ -178,6 +179,10 @@ app.get("/videos", auth.isAuth, (req, res) => {
 app.get("/activeVideos", auth.isAuth, (req, res) => {
   data = sync.syncTable().get();
   res.send(data);
+});
+
+app.get("/getip", auth.isAuth, (req, res) => {
+  res.send(ip.address());
 });
 
 app.get("/initializedb", auth.isAuth, (req, res) => {

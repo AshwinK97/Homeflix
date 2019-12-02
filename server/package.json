@@ -24,6 +24,7 @@
     "express-fileupload": "^1.1.6",
     "express-session": "^1.17.0",
     "file-encrypt": "0.0.1",
+    "ip": "^1.1.5",
     "socket.io": "^2.3.0",
     "sqlite3": "^4.1.0",
     "taffy": "^2.6.2",
