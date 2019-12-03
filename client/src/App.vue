@@ -2,7 +2,7 @@
   <v-app>
     <v-app-bar app color="primary" dark>
       <div class="d-flex align-center">
-        <p style="margin: 0">Logged in as {{this.$userId}}</p>
+        <p style="margin: 0" v-if="this.$userId !== ''">Logged in as {{this.$userId}}</p>
       </div>
       <v-spacer></v-spacer>
       <router-link to="/">
@@ -20,36 +20,47 @@
       </router-link>
     </v-app-bar>
     <v-content>
-      <Auth v-if="!this.authenticated" @toggleAuth="toggleAuth" />
+      <User v-if="!this.authenticated" @toggleAuth="toggleAuth" />
       <router-view v-else></router-view>
     </v-content>
   </v-app>
 </template>
 
 <script>
-import Auth from "@/components/Auth.vue";
+import User from "@/components/User.vue";
 import axios from 'axios';
 
 export default {
   name: "App",
   components: {
-    Auth
+    User
   },
   data() {
     return {
-      authenticated: true
+      authenticated: false
     };
   },
   methods: {
     toggleAuth(data) {
       this.$userId = data;
       this.authenticated = true;
-
-      console.log(this.$userId);
     }
   },
-  beforeDestroy() {
-    console.log("App is being destroyed")
+  mounted() {
+    console.log(localStorage.userId);
+    if(localStorage.userId) {
+      axios
+        .post("http://"+ this.$serverIP +":3000/isUserHandle", {
+          username: localStorage.userId
+        })
+        .then(res => {
+          this.authenticated = true;
+          this.$userId = localStorage.userId;
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    }
   }
 };
 </script>

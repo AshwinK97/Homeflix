@@ -36,6 +36,42 @@ app.use((req, res, next) => {
   next();
 });
 
+app.post("/addUserHandle", (req, res) => {
+  if(!req.body.username) {
+    return res.status(404).send("No Username sent");
+  }
+
+  const username = req.body.username;
+  const id = math.getRandomInt(1000000, 9999999);
+
+  const result = sync.userTable.insert({
+    user: username
+  });
+  
+  console.log(`User ${username} has been added`);
+
+  if(result.count() > 0) {
+    return res.sendStatus(204);
+  } else {
+    return res.sendStatus(500);
+  }
+})
+
+app.post("/isUserHandle", (req, res) => {
+  if(!req.body.username) {
+    return res.status(404).send("No Username sent");
+  }
+
+  const username = req.body.username;
+
+  console.log("Retrieving User: " + username);
+
+  const result = sync
+  .userTable({ user: username })
+
+  return res.sendStatus(204);
+})
+
 app.post("/login", (req, res) => {
   if (!req.body.username || !req.body.password) {
     return res.status(400).send("Invalid username or password.");

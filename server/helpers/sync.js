@@ -1,5 +1,5 @@
 const TAFFY = require('taffy')
 
 let syncTable = TAFFY();
-
-module.exports = { syncTable };
+let userTable = TAFFY();
+module.exports = { syncTable, userTable };
