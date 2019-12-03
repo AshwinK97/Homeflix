@@ -4,7 +4,7 @@
       <h1 class="display-3">Library</h1>
     </v-flex>
     <v-row>
-      <v-col cols="12" sm="3" v-for="video in videos" :key="video.id">
+      <v-col cols="12" sm="4" v-for="video in videos" :key="video.id">
         <router-link class="link" :to="{name: 'video', params: {id: video.id, title: video.name }}">
           <v-card min-width="350" min-height="200">
             <v-img :src="'http://' + $serverIP + ':3000/' + video.name + '.jpeg'" height="200"></v-img>
