@@ -19,7 +19,7 @@
       </v-row>
       <v-row align="center" class="chat-footer">
         <v-col sm="10">
-          <v-text-field v-model="message" label="Message" required></v-text-field>
+          <v-text-field @keyup.enter="sendMessage" v-model="message" label="Message" required></v-text-field>
         </v-col>
         <v-col sm="2">
           <v-btn v-on:click="sendMessage">Send</v-btn>
