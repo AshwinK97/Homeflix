@@ -37,7 +37,7 @@ app.use((req, res, next) => {
 });
 
 app.post("/addUserHandle", (req, res) => {
-  if(!req.body.username) {
+  if (!req.body.username) {
     return res.status(404).send("No Username sent");
   }
 
@@ -47,18 +47,18 @@ app.post("/addUserHandle", (req, res) => {
   const result = sync.userTable.insert({
     user: username
   });
-  
+
   console.log(`User ${username} has been added`);
 
-  if(result.count() > 0) {
+  if (result.count() > 0) {
     return res.sendStatus(204);
   } else {
     return res.sendStatus(500);
   }
-})
+});
 
 app.post("/isUserHandle", (req, res) => {
-  if(!req.body.username) {
+  if (!req.body.username) {
     return res.status(404).send("No Username sent");
   }
 
@@ -66,11 +66,10 @@ app.post("/isUserHandle", (req, res) => {
 
   console.log("Retrieving User: " + username);
 
-  const result = sync
-  .userTable({ user: username })
+  const result = sync.userTable({ user: username });
 
   return res.sendStatus(204);
-})
+});
 
 app.post("/login", (req, res) => {
   if (!req.body.username || !req.body.password) {
@@ -158,7 +157,7 @@ app.post("/upload", auth.isAuth, (req, res) => {
             });
           }
         );
-        
+
         return console.log(`thumbnail stored at ${path}`);
       }
     );
