@@ -8,7 +8,7 @@ Vue.config.productionTip = false
 Vue.use(Chat);
 
 let globalData = new Vue({
-  data: { $userId: '' }
+  data: { $userId: 'Admin' }
 });
 
 Vue.mixin({

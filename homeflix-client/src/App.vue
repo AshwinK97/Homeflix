@@ -2,7 +2,7 @@
   <v-app>
     <v-app-bar app color="primary" dark>
       <div class="d-flex align-center">
-        <p style="margin: 0">Logged in as {{$userId}}</p>
+        <p style="margin: 0">Logged in as {{this.$userId}}</p>
       </div>
       <v-spacer></v-spacer>
       <router-link to="/">
@@ -37,14 +37,19 @@ export default {
   },
   data() {
     return {
-      authenticated: false
+      authenticated: true
     };
   },
   methods: {
     toggleAuth(data) {
       this.$userId = data;
       this.authenticated = true;
+
+      console.log(this.$userId);
     }
+  },
+  beforeDestroy() {
+    console.log("App is being destroyed")
   }
 };
 </script>
