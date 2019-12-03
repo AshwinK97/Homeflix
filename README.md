@@ -1,31 +1,9 @@
 # Homeflix
+
 Distributed Systems final project
 
-## TODO + Functionality Breakdown
+Home video streaming server and client application. Can be used to upload and stream personally owned video content to other devices around the house and to friends. Ex. Phones, Smart TVs and laptops. Users can watch videos in sync and chat while viewing. All uploaded videos are safely encrypted.
 
-### Client - Server Streaming
+## Setup
 
-- [ ] File Tree
-  - [ ] View public videos in archive
-  - [ ] View private videos in archive based on user id and auth
-
-- [ ] Authentication of user
-  - [ ] Provide login/signup screen
-
-- [X] View Video in Client with full control
-
-- [ ] (Optional) Videos on server are one-way encrypted
-
-### Client Syncronization
-
-- [ ] "Watching Now" Section
-  - [ ] Live video or thumbnail grid view
-
-- [ ] Sync client video stream with video chosen from "Watching Now"
-- [ ] Chat Feature
-- [ ] Sync Scrubbing?
-
-### P2P Seeding
-
-- [ ] Download feature for client
-- [ ] Chunking video to be streamed from Server and multiple clients
+Follow setup instructions in `server` and `client` folders.
