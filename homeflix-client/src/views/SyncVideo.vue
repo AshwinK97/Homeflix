@@ -2,12 +2,12 @@
   <div>
     <v-container>
       <v-row>
-        <h2>{{ video.title }}</h2>
+        <h2>{{ video.title.substring(0, video.title.lastIndexOf("_")).replace(/_/g, " ") }}</h2>
       </v-row>
       <v-row>
         <v-col cols="8">
           <video width="100%" controls autoplay ref="videoPlayer" class="video">
-            <source :src="'http://localhost:3000/video/' + this.$route.params.id" type="video/mp4" />
+            <source :src="'http://'+$serverIP+':3000/video/' + this.$route.params.id" type="video/mp4" />
           </video>
           <v-switch v-model="syncOn" label="Sync"></v-switch>
         </v-col>
@@ -15,10 +15,6 @@
           <Chat />
         </v-col>
       </v-row>
-      <!-- <v-row>
-        <v-col cols="12">
-        </v-col>
-      </v-row>-->
     </v-container>
   </div>
 </template>
@@ -53,11 +49,7 @@ export default {
       }
     });
   },
-  methods: {
-    skip() {
-      this.videoElement.currentTime = 20;
-    }
-  },
+  methods: { },
   data() {
     return {
       video: {
@@ -67,7 +59,7 @@ export default {
       userId: "",
       syncUser: "",
       syncOn: true,
-      socket: io("localhost:3000")
+      socket: io(this.$serverIP + ":3000")
     };
   }
 };

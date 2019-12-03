@@ -1,6 +1,10 @@
 <template>
   <v-app>
     <v-app-bar app color="primary" dark>
+      <div class="d-flex align-center">
+        <p style="margin: 0">Logged in as {{this.$userId}}</p>
+      </div>
+      <v-spacer></v-spacer>
       <router-link to="/">
         <div class="d-flex align-center">
           <h2 style="color: #fff">Homeflix</h2>
@@ -24,6 +28,7 @@
 
 <script>
 import Auth from "@/components/Auth.vue";
+import axios from 'axios';
 
 export default {
   name: "App",
@@ -42,6 +47,9 @@ export default {
 
       console.log(this.$userId);
     }
+  },
+  beforeDestroy() {
+    console.log("App is being destroyed")
   }
 };
 </script>

@@ -56,7 +56,7 @@ app.post("/login", (req, res) => {
     });
 });
 
-app.get("/signup", (req, res) => {
+app.post("/signup", (req, res) => {
   if (!req.body.username || !req.body.password) {
     return res.send("Invalid username or password.");
   }
@@ -118,10 +118,11 @@ app.post("/upload", auth.isAuth, (req, res) => {
             fs.unlink(`./staging/${name + extension}`, err => {
               if (err) console.error(err);
               console.log("file removed from staging");
+              res.sendStatus(204);
             });
           }
         );
-
+        
         return console.log(`thumbnail stored at ${path}`);
       }
     );

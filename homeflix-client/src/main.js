@@ -7,7 +7,20 @@ import Chat from 'vue-beautiful-chat'
 Vue.config.productionTip = false
 Vue.use(Chat);
 
-Vue.prototype.$userId = "Kaushal";
+let globalData = new Vue({
+  data: { $userId: 'Admin' }
+});
+
+Vue.mixin({
+  computed: {
+    $userId: {
+      get: function () { return globalData.$data.$userId },
+      set: function (newUserId) { globalData.$data.$userId = newUserId; }
+    }
+  }
+})
+
+Vue.prototype.$serverIP = window.location.hostname;
 
 new Vue({
   router,

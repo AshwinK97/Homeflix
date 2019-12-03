@@ -3,25 +3,20 @@
     <v-container>
       <v-row>
         <h2>
-          {{ video.title }}
+          {{ video.title.substring(0, video.title.lastIndexOf("_")).replace(/_/g, " ") }}
         </h2>
       </v-row>
       <v-row>
         <v-col cols="8">
           <video width="100%" controls autoplay ref="videoPlayer" class="video">
             <source
-              :src="'http://localhost:3000/video/' + this.$route.params.id"
+              :src="'http://'+$serverIP+':3000/video/' + this.$route.params.id"
               type="video/mp4"
             />
           </video>
         </v-col>
         <v-col cols="4">
           <Chat />
-        </v-col>
-      </v-row>
-      <v-row>
-        <v-col cols="12">
-          <v-btn v-on:click="skip">Skip 20secs</v-btn>
         </v-col>
       </v-row>
     </v-container>
@@ -48,9 +43,9 @@ export default {
     this.video.title = this.$route.params.title;
     this.video.id = this.$route.params.id;
     this.userId = this.$userId;
-
+    console.log("video "+this.$userId);
     axios
-      .post("http://localhost:3000/addSync", {
+      .post("http://"+this.$serverIP+":3000/addSync", {
         user: this.$userId,
         title: this.video.title,
         id: this.video.id
@@ -65,7 +60,7 @@ export default {
   beforeDestroy() {
     clearInterval(this.syncFn);
     axios
-      .post("http://localhost:3000/removeSync", {
+      .post("http://"+this.$serverIP+":3000/removeSync", {
         user: this.$userId,
         id: this.video.id
       })
@@ -83,7 +78,7 @@ export default {
     enableSync() {
       this.syncFn = setInterval(() => {
         this.socket.emit("SYNC_VIDEO", {
-          user: this.userId,
+          user: this.$userId,
           video: this.video.title,
           id: this.video.id,
           time: Math.floor(this.videoElement.currentTime)
@@ -98,7 +93,7 @@ export default {
         id: 0
       },
       userId: "",
-      socket: io("localhost:3000"),
+      socket: io(this.$serverIP+":3000"),
       syncFn: null
     };
   }
