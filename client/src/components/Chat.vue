@@ -44,9 +44,11 @@ export default {
     };
   },
   methods: {
+    // Emit user message to all other users watching the same video
     sendMessage(e) {
       e.preventDefault();
 
+      // Emit message to global channel SEND_MESSAGE as well as the chatId
       this.socket.emit("SEND_MESSAGE", {
         user: this.user,
         message: this.message,
@@ -66,10 +68,10 @@ export default {
     this.user = this.$userId;
     this.chatId = this.$route.params.title;
 
+    // Use chatId to restrict incoming messages if they pertain to your chatId
     this.socket.on("MESSAGE_" + this.chatId, data => {
       data.owner = this.isOwner(data.user);
       this.messages = [...this.messages, data];
-      // you can also do this.messages.push(data)
     });
   }
 };
@@ -80,7 +82,6 @@ export default {
   border: 1px #ccc solid;
   border-radius: 0.2rem;
   background-color: #fff;
-  /* padding: 10px 20px; */
   padding-bottom: 0;
 }
 

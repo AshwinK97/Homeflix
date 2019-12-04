@@ -40,14 +40,16 @@ export default {
   },
   methods: {
     addUser() {
+      // Allow user to create user handle to be used by application
       axios
         .post("http://"+ this.$serverIP +":3000/addUserHandle", {
           username: this.userId
         })
         .then(res => {
-          this.snackbarText = "Login Successful! Redirecting to home page";
-          this.snackbar = true;
+          // Save user handle to localstorage for when the website is accessed again
           localStorage.userId = this.userId;
+
+          // Notify App level component about user Id
           this.$emit("toggleAuth", this.userId);
         })
         .catch(err => {

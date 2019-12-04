@@ -29,10 +29,10 @@ export default {
     };
   },
   mounted() {
+    // When component is created, read in all active videos from the server
     axios
       .get("http://"+this.$serverIP+":3000/activeVideos")
       .then(res => {
-        console.log(res.data);
         this.videos = res.data;
       })
       .catch(err => {

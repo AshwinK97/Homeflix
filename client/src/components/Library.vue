@@ -29,6 +29,7 @@ export default {
     };
   },
   mounted() {
+    // When component is created, read in all videos from the server
     axios
       .get("http://" + this.$serverIP + ":3000/videos")
       .then(res => {
