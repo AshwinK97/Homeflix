@@ -1,8 +1,7 @@
 const port = 3000;
 const domain = "*";
 const dbname = "videoDB.db";
-const secret =
-  "knu6ZDeBwOWUpSylm5gxcuz1hwVI2JIQzFZ510f6F83pEcx3vkk79nozNhk2TqtgeAZ3KrQ1lrJ7M4ztoL7FsvmOKHwDXy61clesQAtU6eIUGySz3uYR5kY";
+const secret = "knu6ZDeBwOWUpSylm5gxcuz1hwVI2JIQzFZ510f6F83pEcx3vkk79nozNhk2TqtgeAZ3KrQ1lrJ7M4ztoL7FsvmOKHwDXy61clesQAtU6eIUGySz3uYR5kY";
 const saltRounds = 12;
 const algorithm = "aes-256-ctr";
 const createUsersQuery = `CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, username Text NOT NULL, password Text NOT NULL)`;

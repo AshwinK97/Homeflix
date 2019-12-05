@@ -1,8 +1,3 @@
-/**
- * Backup file with helper functions used to perform file encryption.
- * Would be used in the event that the file-encrpyt package does not work.
- */
-
 const crypto = require("crypto");
 const config = require("../config");
 
