@@ -1,12 +1,22 @@
+/**
+ * Backup file with helper functions used to perform file encryption.
+ * Would be used in the event that the file-encrpyt package does not work.
+ */
+
 const crypto = require("crypto");
 const config = require("../config");
 
+// configure hash key to be used for file encryption
 let key = crypto
   .createHash("sha256")
   .update(String(config.secret))
   .digest("base64")
   .substr(0, 32);
 
+/**
+ * Takes a buffer, which should contain file data and uses a cipher
+ * to encrypt it. Returns the encrypted buffer.
+ */
 const encrypt = buffer => {
   // Create an initialization vector
   const iv = crypto.randomBytes(16);
@@ -17,6 +27,10 @@ const encrypt = buffer => {
   return result;
 };
 
+/**
+ * Takes an encrypted file buffer, uses cipher to reverse encryption.
+ * Returns the decrypted buffer.
+ */
 const decrypt = encrypted => {
   // Get the iv: the first 16 bytes
   const iv = encrypted.slice(0, 16);
