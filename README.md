@@ -21,6 +21,21 @@ Distributed Systems Final Project.
 
 - **Follow setup instructions in [server](https://github.com/AshwinK97/Homeflix/blob/master/server/README.md) and [client](https://github.com/AshwinK97/Homeflix/blob/master/client/README.md) folders.**
 
+### Server Setup
+
+1. Install all necessary dependencies: `npm install`
+2. Run the node server: `node server` or `node server.js`
+  - Runs server on port `3000`
+3. For first time setup with new database, go to `http://localhost:3000/initializedb` 
+
+### Client Setup
+
+1. Install all necessary dependencies: `npm install`
+2. Serve the development environment application: `npm run serve`
+3. Use the `local` or `network` address to use application
+
+Recommended: Use `network` address if you want to allow other devices on the same LAN to access the application
+
 ## Overview
 
 Home video streaming server and client application. Can be used to upload and stream personally owned video content to other devices around the house and to friends. Ex. Phones, Smart TVs and laptops. Users can watch videos in sync and chat while viewing. All uploaded videos are safely encrypted.

@@ -4,58 +4,25 @@
 
 1. Install all necessary dependencies: `npm install`
 2. Run the node server: `node server` or `node server.js`
-3. Run at `localhost:3000`, can also run at local ip
-4. For first time setup with new database, run `/initializedb`
+  - Runs server on port `3000`
+3. For first time setup with new database, go to `http://localhost:3000/initializedb` 
 
 ## Server Routes
 
-#### /addUserHandle : GET
-
-Temprorary route used to add user to sync table.
-
-#### /isUserHandle : POST
-
-Checks if user is registered in sync table.
-
-#### /login : POST
-
-Takes username and password, authenticates and returns status.
-
-#### /signup : POST
-
-Takes new username and password, checks if username is unique, creates new user and/or returns status.
-
-#### /upload : POST
-
-Checks if file was uploaded, generates name and thumbnail, encrypts and stores in video storage.
-
-#### /video/:id : GET
-
-Looks up video based on id requested, retrieves path, decrypts the video and streams it to the client based on requested range.
-
-#### /videos : GET
-
-Looks up all available videos in database.
-
-#### /activeVideos : GET
-
-Looks up all currently watched videos from sync table.
-
-#### /getip : GET
-
-Returns server ip address.
-
-#### /initializedb : GET
-
-Initializes database, creates tables.
-
-#### /addSync : POST
-
-Store user, video title and video id in sync table.
-
-#### /removeSync : POST
-
-Removes entry from sync table based on user and video id.
+|     Route      | Method |                Params                |                                                           Description                                                           |
+| -------------- | ------ | ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------- |
+| /addUserHandle | GET    | String: username                     | Temprorary route used to add user to sync table.                                                                                |
+| /isUserHandle  | POST   | String: username                     | Checks if user is registered in sync table.                                                                                     |
+| /login         | POST   | String: username<br>String: password | Takes username and password, authenticates and returns status.                                                                  |
+| /signup        | POST   | String: username<br>String: password | Takes new username and password, checks if username is unique, creates new user and/or returns status.                          |
+| /upload        | POST   | File in request header               | Checks if file was uploaded, generates name and thumbnail, encrypts and stores in video storage.                                |
+| /video:id      | GET    | int: id                              | Looks up video based on id requested, retrieves path, decrypts the video and streams it to the client based on requested range. |
+| /videos        | GET    | None                                 | Looks up all available videos in database.                                                                                      |
+| /activeVideos  | GET    | None                                 | Looks up all currently watched videos from sync table.                                                                          |
+| /getip         | GET    | None                                 | Returns server ip address.                                                                                                      |
+| /initializedb  | GET    | None                                 | Initializes database, creates tables.                                                                                           |
+| /addSync       | POST   | String: user<br>int: id              | Store user, video title and video id in sync table.                                                                             |
+| /removeSync    | POST   | String: user<br>int: id              | Removes entry from sync table based on user and video id.                                                                       |
 
 ## Video Streaming
 
