@@ -1,11 +1,12 @@
 const bcrypt = require("bcrypt");
 const bodyParser = require("body-parser");
-const express = require("express");
 const encrypt = require("file-encrypt");
+const express = require("express");
 const fileUpload = require("express-fileupload");
-const ip = require("ip");
-const session = require("express-session");
 const fs = require("fs");
+const ip = require("ip");
+const perf = require("execution-time")(console.log);
+const session = require("express-session");
 const thumbler = require("thumbler");
 
 // import config and helpers
@@ -153,8 +154,11 @@ app.post("/upload", auth.isAuth, (req, res) => {
       (err, path) => {
         if (err) return console.error(err);
         // encrypt video, delete unencrypted one
+        perf.start();
         encrypt.encryptFile(`./staging/${name + extension}`, `./videos/${name + extension}`, config.secret, err => {
           if (err) return console.error(err);
+          console.log("encryption time: ");
+          perf.stop();
           console.log("encryption success");
           db.addVideo(name, `./videos/${name + extension}`);
           fs.unlink(`./staging/${name + extension}`, err => {
@@ -182,9 +186,13 @@ app.get("/video/:id", auth.isAuth, (req, res) => {
   db.getVideoPath(req.params.id)
     .then(data => {
       const path = data.path.replace("videos", "staging");
+      perf.start();
       encrypt.decryptFile(`${data.path}`, `${path}`, config.secret, err => {
         if (err) return console.error(err);
+        console.log("Decryption time: ");
+        perf.stop();
         console.log("decryption success");
+        perf.start();
         const stat = fs.statSync(path);
         const fileSize = stat.size;
         const range = req.headers.range;
@@ -200,6 +208,8 @@ app.get("/video/:id", auth.isAuth, (req, res) => {
             "Content-Length": chunksize,
             "Content-Type": "video/mp4"
           };
+          console.log("Streaming time: ");
+          perf.stop();
           res.writeHead(206, head);
           file.pipe(res);
         } else {
@@ -224,8 +234,13 @@ app.get("/video/:id", auth.isAuth, (req, res) => {
  * Returns a json object with id, name & path of each video.
  */
 app.get("/videos", auth.isAuth, (req, res) => {
+  perf.start();
   db.getAllVideos()
-    .then(data => res.send(data))
+    .then(data => {
+      console.log("Retrieving video data from database time: ");
+      perf.stop();
+      res.send(data);
+    })
     .catch(err => console.error(err));
 });
 
@@ -233,7 +248,10 @@ app.get("/videos", auth.isAuth, (req, res) => {
  * Retrieves all currently watched videos from sync table.
  */
 app.get("/activeVideos", auth.isAuth, (req, res) => {
+  perf.start();
   data = sync.syncTable().get();
+  console.log("Retrieving active videos time: ");
+  perf.stop();
   res.send(data);
 });
 
@@ -260,6 +278,7 @@ app.get("/initializedb", auth.isAuth, (req, res) => {
  * can be pulled by the client homepage with /activevideos
  */
 app.post("/addSync", (req, res) => {
+  perf.start();
   const user = req.body.user;
   const title = req.body.title;
   const videoid = req.body.id;
@@ -270,6 +289,8 @@ app.post("/addSync", (req, res) => {
     time: 0
   });
 
+  console.log("Add watching now time: ");
+  perf.stop();
   res.sendStatus(204);
 });
 
@@ -280,8 +301,11 @@ app.post("/addSync", (req, res) => {
  * it no longer shows up under the watching now section
  */
 app.post("/removeSync", (req, res) => {
+  perf.start();
   const result = sync.syncTable({ user: req.body.user, videoid: req.body.id }).remove();
   if (result > 0) {
+    console.log("Remove watching now time: ");
+    perf.stop();
     res.sendStatus(204);
   } else {
     res.status(400).send("data incompatible");
@@ -311,7 +335,7 @@ io.on("connection", function(socket) {
   });
 
   socket.on("SYNC_VIDEO", function(data) {
-    console.log("Capturing time from: " + data.user + " watching " + data.video + "... time = " + data.time);
+    // console.log("Capturing time from: " + data.user + " watching " + data.video + "... time = " + data.time);
     let row = sync.syncTable({ user: data.user, videoid: data.id });
     row.update({ time: data.time });
     io.emit("SYNC_VIDEO_TIME_" + data.user + "_" + data.id, data.time);
